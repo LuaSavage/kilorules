@@ -156,8 +156,8 @@ func TestHandler(t *testing.T) {
 ```
 
 ## Helpers and testcase code order
-First write that very test code
-Then, at file footer write helper code if it's really necessary
+First write that very test code 
+Then, at file footer write helper code if it's really necessary 
 Move anyCtx and other any vars to top, if they're necessary
 
 
