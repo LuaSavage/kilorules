@@ -57,15 +57,15 @@ func TestFunctionName(t *testing.T) {
 
 ### Test Case Naming Convention
 
--Positive scenarios: Start with OK, {details}
+- Positive scenarios: Start with OK, {details}
 
---Example: OK, valid request with all parameters
---Example: OK, empty list returns zero results
+-- Example: OK, valid request with all parameters
+-- Example: OK, empty list returns zero results
 
--Negative scenarios: Start with Error with {methodname}
+- Negative scenarios: Start with Error with {methodname}
 
---Example: Error with GetMarkersStats, database connection failed
---Example: Error with ValidateInput, invalid parameter
+-- Example: Error with GetMarkersStats, database connection failed
+-- Example: Error with ValidateInput, invalid parameter
 
 ### Mock Call Structure
 Define mock call structures following this pattern:
