@@ -1,0 +1,12 @@
+{
+  "base_path": "src/pkg/repository",
+  "cache_dir": "cache/cache_data",
+  "schema_file": "schema.sql",
+  "query_file": "query.sql",
+  "generated": {
+    "models_sql_go": "generated/models.sql.go",
+    "query_sql_go": "generated/query.sql.go",
+    "querier_sql_go": "generated/querier.sql.go"
+  }
+}
+
