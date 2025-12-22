@@ -42,13 +42,11 @@ assert len(items) > 0
 @allure.epic("api")
 @allure.feature("Taskflow")
 @allure.story(
-    "https://jira.sberbank.ru/browse/TAGME-7650",  # Jira story link
-    "https://jira.sberbank.ru/browse/TAGME-9056",  # Jira task link  
-    "TAGME-9056"                                   # Jira task ID
+    "https://jira.sberbank.ru/browse/TAGME-7650", "https://jira.sberbank.ru/browse/TAGME-9056", "TAGME-9056"
 )
 ```
 ## 4. Logging Rules
-- Use allure_logs for commenting test flow (instead of regular comments)
+- **Important:** Use allure_logs for commenting test flow instead of regular comments
 - Apply @allure_step_decorator before functions where you want allure logs
 - All allure logs must start with capital letter
 
@@ -209,3 +207,4 @@ elif status == TaskStatus.COMPLETED:
 - Code duplication eliminated via parameterization or loops
 - Test header follows the exact template
 - Complex responses validated against dataclass instances
+- Dont left unused variables

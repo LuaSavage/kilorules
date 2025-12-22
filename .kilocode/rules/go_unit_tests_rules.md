@@ -68,6 +68,7 @@ func TestFunctionName(t *testing.T) {
  - Example: Error with ValidateInput, invalid parameter
 
 ### Mock Call Structure
+**Important:** use `m.EXPECT()`. instead of `m.ON().`
 Define mock call structures following this pattern:
 
 ```go

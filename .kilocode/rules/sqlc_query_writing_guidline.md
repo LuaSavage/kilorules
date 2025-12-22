@@ -6,39 +6,6 @@ This document defines the conventions and rules for writing SQL queries in the `
 
 ### Query Names
 - Use **PascalCase** (e.g., `GetItemInfo`, `InsertTaskInSkills`).
-- Prefix indicates the operation:
-  - `Get` – SELECT returning rows.
-  - `Insert` – INSERT statements.
-  - `Update` – UPDATE statements.
-  - `Delete` / `Del` – DELETE statements (short form `Del` is allowed).
-  - `Lock` – SELECT … FOR UPDATE (row‑level locking).
-  - `Check` – EXISTS subqueries that return a boolean.
-  - `Set` – UPDATE that sets a specific state (e.g., `SetStatusStop`).
-  - `Upsert` – INSERT … ON CONFLICT.
-  - `Add` – adding relations (e.g., `AddMarkersToTaskAccess`).
-  - `Remove` – removing relations.
-  - `Increment` – incrementing counters.
-  - `Expire` – expiring assignments.
-  - `Archive` / `Unarchive` – moving data to/from archive.
-  - `Fill` – filling missing data.
-  - `Drop` – dropping a status flag.
-  - `Mark` – marking a record (e.g., `InsertMarkedTask`).
-  - `Recalculate` – recalculating statistics.
-  - `Enable` / `Disable` – enabling/disabling records.
-  - `Post` – posting an assignment result.
-  - `Skip` – skipping an assignment.
-  - `Reject` – rejecting assignments.
-  - `Assign` – assigning an assignment to a marker.
-  - `Activate` – activating an assignment.
-  - `Unassign` – unassigning an assignment.
-  - `Release` – releasing a job lock.
-  - `Put` – updating a single field (e.g., `PutItemOverlap`).
-
-### Suffixes (sqlc command types)
-- `:one` – query returns exactly one row.
-- `:many` – query returns zero or more rows.
-- `:exec` – query does not return rows (INSERT/UPDATE/DELETE without RETURNING).
-- `:copyfrom` – batch insert operation (used with `sqlc.copyfrom`).
 
 ### Additional Name Parts
 - Use `ByID`, `ByIDs`, `ByTaskID`, `ByMarkerID`, etc. to indicate filtering criteria.
