@@ -1,0 +1,8 @@
+{
+  "base_path": "src/pkg/api",
+  "cache_dir": "cache_data",
+  "spec_file": "taskflow.yaml",
+  "boilerplate_file": "boilerplate.gen.go"
+}
+
+
