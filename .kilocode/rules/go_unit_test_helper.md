@@ -1,97 +1,109 @@
-## Unit Testing Rules for Go
+# Rule: go-mockery-descriptor — Configuration and Usage
 
-### Mockery Code Generation Pattern
+## Required: go:generate
 
-We use a custom code generation tool `go-mockery-descriptor` that creates type-safe mock call tracking structures.
+**Once** add the directive to the test package (any `*_test.go` file), if not already present:
 
-#### 1. Generation Directive
-Place this in the interface definition file:
 ```go
 //go:generate go-mockery-descriptor
 ```
 
-### 2. Descriptor Configuration
+Placement: in any `*_test.go` file of the package where the generated mock is used. Run: `go generate ./...` or `go generate ./path/to/package` from the module root.
 
-Create `.mockery-descriptor.yaml` in the same package directory:
+---
+
+## Filling `.mockery-descriptor.yaml`
+
+Place the file in the package directory that contains the interface, or in the module root (search walks up to `go.mod`).
+
+### Minimal structure
 
 ```yaml
+interfaces:
+  - name: InterfaceName
+```
+
+### Full example
+
+```yaml
+constructor-name: "newMock{{ . }}"
+package-name: "{{ . }}"
+output: "{{ . }}.gen_test.go"
 interfaces:
   - name: UserService
     rename-returns:
       GetUser.r0: User
+      GetUser.r1: Err
       ListUsers.r0: Users
-      # For methods returning only error
-      CreateUser.r0: CreatedUserID  # or just omit if not needed
+    field-overwriter-param:
+      - Save.items=elementsMatch
+      - SetStatus.status=oneOf
+      - Log.msg=any
 ```
 
-**CRITICAL RULES** for rename-returns:
+### Interface-level fields
 
-❌ NEVER use auto-generated names (R0, R1, R2) - always rename!  
-✅ Always check the actual implementation to find meaningful return names  
-✅ Use singular/plural consistently with domain concepts  
-✅ For methods returning only error, you can omit rename if the return isn't captured. 
+| Field | Required | Description |
+|-------|----------|-------------|
+| `name` | Yes | Exact Go interface name |
+| `rename-returns` | No | Rename return fields in call structs |
+| `field-overwriter-param` | No | Override matchers for method parameters |
 
-### 3. Generated Pattern Structure
+### rename-returns
 
-The tool generates this structure (DO NOT modify manually):
+Format: `Method.rN: NewName`, where `r0`, `r1` are return value indices.
 
-```go
-type getUserCall struct {
-    Id string
-    
-    ReceivedUser *User  // Renamed from R0
-    ReceivedErr  error
-}
+- `r0` — first return, `r1` — second, etc.
+- Without renaming you get `ReceivedR0`, `ReceivedR1`.
+- For `error` use `Err` or leave default.
 
-type userServiceCalls struct {
-    GetUser    []getUserCall
-    ListUsers  []listUsersCall
-    CreateUser []createUserCall
-}
-
-func makeUserServiceMock(t *testing.T, calls *userServiceCalls) UserService {
-    t.Helper()
-    m := newMockUserService(t)
-    anyCtx := mock.Anything
-    
-    for _, call := range calls.GetUser {
-        m.EXPECT().GetUser(anyCtx, call.Id).
-            Return(call.ReceivedUser, call.ReceivedErr).
-            Once()
-    }
-    // ... other methods
-}
+Examples:
+```yaml
+rename-returns:
+  GetUser.r0: User      # (*User, error) → ReceivedUser
+  GetUser.r1: Err       # error → ReceivedErr
+  List.r0: Items        # []Item → ReceivedItems
+  Create.r0: ID         # (string, error) → ReceivedID
 ```
 
-### 4. Best Practices
+### field-overwriter-param
 
-**DO:**  
-✅ Place .mockery-descriptor.yaml next to the interface definition. 
-✅ Use meaningful return names based on domain language. 
-✅ Include only interfaces that need mocks in the config. 
-✅ Commit generated mock files to version control. 
-✅ Use t.Helper() in make functions for better test failure traces. 
+Format: `Method.ParamName=matcher`
 
-**DON'T:**. 
-❌ Never manually edit generated call structs  
-❌ Don't use R0, R1 names in tests - always use renamed fields. 
-❌ Don't generate mocks for interfaces without rename-returns. 
-❌ Don't put multiple unrelated interfaces in one descriptor file. 
+Supported matchers:
 
-### 5. Finding Return Names
+| Matcher | Purpose |
+|---------|---------|
+| `elementsMatch` | Slice: element order does not matter |
+| `oneOf` | Value must be one of the expected values |
+| `any` | Any value (mock.Anything) |
 
-To find proper return names:  
-
-Find the interface implementation. 
-Check the method signature in the implementation. 
-Look at the actual return variable names in the implementation. 
-If implementation uses unnamed returns, check the interface documentation. 
-As last resort - use the domain entity name (singular/plural). 
-
-```go
-// Implementation shows meaningful return names
-func (s *userService) GetUser(ctx context.Context, id string) (*User, error) {
-    // Return names from implementation: user, err
-    return &User{}, nil  // Use "User" as return name
-}
+Examples:
+```yaml
+field-overwriter-param:
+  - FindByIDs.ids=elementsMatch   # []string — order-independent
+  - Update.status=oneOf           # enum-like — one of allowed values
+  - LogMessage.ctx=any            # context — always any
+  - Callback.fn=any               # callback — always any
 ```
+
+### Global parameters (optional)
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `constructor-name` | `newMock{{ . }}` | Mock constructor name template |
+| `package-name` | `{{ . }}_test` | Package name in generated file |
+| `output` | `{{ . }}.mockery-helper_test.go` | Output file name template |
+
+`{{ . }}` is substituted with the interface name (constructor/output) or package name (package-name).
+
+---
+
+## Pre-add checklist
+
+1. The interface is already defined in the package.
+2. Mockery mock is already generated (`//go:generate mockery --name=X --inpackage --with-expecter=true --structname=mockX`).
+3. Test package has `//go:generate go-mockery-descriptor` (if not — add once).
+4. `.mockery-descriptor.yaml` is in the correct directory.
+5. `name` in `interfaces` matches the interface name.
+6. `rename-returns` and `field-overwriter-param` match method signatures.
