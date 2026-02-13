@@ -99,6 +99,11 @@ field-overwriter-param:
 
 ---
 
+## Take a note
+Helpers for  Interfaces like 
+**kafkaMessageBuilder** or **taskServiceMock** may use mock.MatchedBy in it's implementation  
+
+
 ## Pre-add checklist
 
 1. The interface is already defined in the package.
