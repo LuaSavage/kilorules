@@ -1,9 +1,11 @@
 # Rule: go-mockery-descriptor — Configuration and Usage
+**Important:** Do not use this helper for interfaces with embedded interfaces as it is not compatible. Use strictly for interfaces without embedding.
 
 ## Required: go:generate
 
 **Once** add the directive to the test package (any `*_test.go` file), if not already present:
 
+**Important**: Always try to use generate calls only for changed packages, not for the whole project.
 ```go
 //go:generate go-mockery-descriptor
 ```
@@ -26,9 +28,6 @@ interfaces:
 ### Full example
 
 ```yaml
-constructor-name: "newMock{{ . }}"
-package-name: "{{ . }}"
-output: "{{ . }}.gen_test.go"
 interfaces:
   - name: UserService
     rename-returns:
@@ -66,6 +65,8 @@ rename-returns:
   Create.r0: ID         # (string, error) → ReceivedID
 ```
 
+**Important:** Strictly DO NOT rename returns with `error` type. They are renamed by default. However, other error-like types (e.g., `api.APIError`) must be specified in the configuration for renaming.
+
 ### field-overwriter-param
 
 Format: `Method.ParamName=matcher`
@@ -86,18 +87,7 @@ field-overwriter-param:
   - LogMessage.ctx=any            # context — always any
   - Callback.fn=any               # callback — always any
 ```
-
-### Global parameters (optional)
-
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `constructor-name` | `newMock{{ . }}` | Mock constructor name template |
-| `package-name` | `{{ . }}_test` | Package name in generated file |
-| `output` | `{{ . }}.mockery-helper_test.go` | Output file name template |
-
-`{{ . }}` is substituted with the interface name (constructor/output) or package name (package-name).
-
----
+**Important**: Strictly DO NOT overwrite context and transaction parameters. They are overwritten by default.
 
 ## Take a note
 Helpers for  Interfaces like 
@@ -105,10 +95,10 @@ Helpers for  Interfaces like
 
 
 ## Pre-add checklist
-
 1. The interface is already defined in the package.
 2. Mockery mock is already generated (`//go:generate mockery --name=X --inpackage --with-expecter=true --structname=mockX`).
 3. Test package has `//go:generate go-mockery-descriptor` (if not — add once).
 4. `.mockery-descriptor.yaml` is in the correct directory.
 5. `name` in `interfaces` matches the interface name.
 6. `rename-returns` and `field-overwriter-param` match method signatures.
+
