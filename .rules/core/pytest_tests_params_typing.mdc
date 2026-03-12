@@ -1,3 +1,7 @@
+---
+alwaysApply: true
+---
+
 # Fixture Type Inference in Pytest
 
 ## Context

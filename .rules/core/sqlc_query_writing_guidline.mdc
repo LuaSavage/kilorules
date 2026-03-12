@@ -1,3 +1,7 @@
+---
+alwaysApply: true
+---
+
 # SQL Query Style Guide for sqlc (TagMe TaskFlow)
 
 This document defines the conventions and rules for writing SQL queries in the `query.sql` file for use with sqlc. The goal is to maintain consistency, readability, and correctness across all generated queries.

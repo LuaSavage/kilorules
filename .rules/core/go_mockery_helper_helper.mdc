@@ -1,3 +1,7 @@
+---
+alwaysApply: true
+---
+
 # Rule: go-mockery-descriptor — Configuration and Usage
 **Important:** Do not use this helper for interfaces with embedded interfaces as it is not compatible. Use strictly for interfaces without embedding.
 

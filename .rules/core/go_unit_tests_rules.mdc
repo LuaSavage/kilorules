@@ -1,3 +1,7 @@
+---
+alwaysApply: true
+---
+
 ## Unit Testing Rules for Go
 
 ## Required Imports
